@@ -18,7 +18,8 @@ var gutil = require('gulp-util');
 var inject = require('gulp-inject-string');
 var partialimport = require('postcss-easy-import');
 var plumber = require('gulp-plumber');
-var postcss = require('gulp-postcss');
+// var postcss = require('gulp-postcss');
+var sass = require('gulp-sass');
 var remoteSrc = require('gulp-remote-src');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
@@ -156,14 +157,24 @@ gulp.task('copy-fonts-dev', function () {
 		.pipe(gulp.dest('build/wordpress/wp-content/themes/' + themeName + '/fonts'))
 });
 
+// gulp.task('style-dev', function () {
+// 	return gulp.src('src/style/style.css')
+// 		.pipe(plumber({ errorHandler: onError }))
+// 		.pipe(sourcemaps.init())
+// 		.pipe(postcss(pluginsDev))
+// 		.pipe(sourcemaps.write('.'))
+// 		.pipe(gulp.dest('build/wordpress/wp-content/themes/' + themeName))
+// 		.pipe(browserSync.stream({ match: '**/*.css' }));
+// });
+
 gulp.task('style-dev', function () {
-	return gulp.src('src/style/style.css')
-		.pipe(plumber({ errorHandler: onError }))
+	return gulp
+	.src("src/style/style.scss")
 		.pipe(sourcemaps.init())
-		.pipe(postcss(pluginsDev))
-		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest('build/wordpress/wp-content/themes/' + themeName))
-		.pipe(browserSync.stream({ match: '**/*.css' }));
+		.pipe(sass().on("error", sass.logError))
+		.pipe(sourcemaps.write("."))
+		.pipe(gulp.dest("build/wordpress/wp-content/themes/" + themeName))
+		.pipe(browserSync.stream({ match: "**/*.css" }));
 });
 
 gulp.task('header-scripts-dev', function () {
@@ -213,13 +224,14 @@ gulp.task('reload-plugins', ['plugins-dev'], function (done) {
 });
 
 gulp.task('watch', function () {
-	gulp.watch(['src/style/**/*.css'], ['style-dev']);
+  // gulp.watch(['src/style/**/*.css'], ['style-dev']);
+  gulp.watch(['src/style/**/*.scss'], ['style-dev']);
 	gulp.watch(['src/js/**'], ['reload-js']);
 	gulp.watch(['src/fonts/**'], ['reload-fonts']);
 	gulp.watch(['src/theme/**'], ['reload-theme']);
 	gulp.watch(['src/plugins/**'], ['reload-plugins']);
 	gulp.watch('build/wordpress/wp-config*.php', function(event){
-		if(event.type === 'added') { 
+		if(event.type === 'added') {
 			gulp.start('disable-cron');
 		}
 	})
@@ -248,10 +260,16 @@ gulp.task('copy-fonts-prod', function () {
 		.pipe(gulp.dest('dist/themes/' + themeName + '/fonts'))
 });
 
+// gulp.task('style-prod', function () {
+// 	return gulp.src('src/style/style.css')
+// 		.pipe(plumber({ errorHandler: onError }))
+// 		.pipe(postcss(pluginsProd))
+// 		.pipe(gulp.dest('dist/themes/' + themeName))
+// });
+
 gulp.task('style-prod', function () {
-	return gulp.src('src/style/style.css')
-		.pipe(plumber({ errorHandler: onError }))
-		.pipe(postcss(pluginsProd))
+	return gulp.src('src/style/style.scss')
+		.pipe(sass().on("error", sass.logError))
 		.pipe(gulp.dest('dist/themes/' + themeName))
 });
 
