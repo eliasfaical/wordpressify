@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 <!-- container -->
-<div class="container">	
+<div class="container">
 	<!-- site-content -->
 	<div class="site-content">
 
@@ -20,7 +20,7 @@
 
 		<div class="pagination side">
 			<?php echo paginate_links(); ?>
-		</div> 
+		</div>
 	</div>
 	<!-- /site-content -->
 
